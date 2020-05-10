@@ -30,44 +30,21 @@ namespace eLOITsModSync
     {
         //Initializes variables from config so they're public
         public static String minecraftDirectory;
-        public static String downloadAddressString;
+        public static String downloadAddress;
+        public static String defaultAddress;
 
         public MainWindow()
         {
             InitializeComponent();
 
-            //Checks if config file exists. If it doesn't creates a config with default settings
-            if (!File.Exists(System.AppDomain.CurrentDomain.FriendlyName + ".Config"))
-            {
-                Debug.WriteLine(System.AppDomain.CurrentDomain.FriendlyName + ".Config");
-                Debug.WriteLine("config missing");
-                resetConfig();
-            }
-            else
-            {
-                Debug.WriteLine("config exists");
-                
-            }
-
-
-            //Gets the default minecraft directory if first run, else gets the value from config.
-            if (getValue("firstRun").Equals("true"))
-            {
-                minecraftDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\.minecraft";
-                Debug.WriteLine(minecraftDirectory);
-                storeValue("minecraftDirectory", minecraftDirectory);
-                storeValue("firstRun", "false");
-            }
-            else
-            {
-                minecraftDirectory = getValue("minecraftDirectory");
-            }
+            //Initalizes all variables from config. if any of them fail to initalize, it will reset the config
+            minecraftDirectory = getValue("minecraftDirectory");
+            downloadAddress = getValue("downloadAddress");
+            defaultAddress = getValue("defaultAddress");
             
             //Don't pull values from config once running, only save them
             //Sets current dirctory text block to current minecraft directory
             currentDirectoryTextField.Text = minecraftDirectory;
-
-            downloadAddressString = getValue("downloadAddress");
 
 
         }
@@ -89,12 +66,14 @@ namespace eLOITsModSync
         //reads a value from config
         public static String getValue(String key)
         {
-            try
+            String toReturn = ConfigurationManager.AppSettings.Get(key);
+            if (toReturn == null)
             {
-                return ConfigurationManager.AppSettings.Get(key);
-            }catch(Exception e) { 
+                resetConfig();
             }
-            return null;
+            Debug.WriteLine("this is toReturn" + toReturn);
+            return toReturn;
+            
         }
         //Opens a folder with selected folder path
         private void OpenFolder(string folderPath)
@@ -114,17 +93,14 @@ namespace eLOITsModSync
             }
         }
         //Method that makes new config
-        private void resetConfig()
+        public static void resetConfig()
         {
+            Debug.WriteLine("Resetting config");
             System.Text.StringBuilder sb = new StringBuilder();
-            sb.AppendLine("<?xml version=\"1.0\" encoding=\"utf - 8\" ?>");
+            sb.AppendLine("<?xml version=\"1.0\" encoding=\"utf-8\" ?>");
             sb.AppendLine("<configuration>");
-            sb.AppendLine("    <startup>");
-            sb.AppendLine("        <supportedRuntime version=\"v4.0\" sku=\".NETFramework, Version = v4.7.2\" />");
-            sb.AppendLine("    </startup>");
             sb.AppendLine("  <appSettings>");
-            sb.AppendLine("    <add key=\"firstRun\" value=\"true\"/>");
-            sb.AppendLine("    <add key=\"minecraftDirectory\" value=\" % APPDATA %\.minecraft\" />");
+            sb.AppendLine("    <add key=\"minecraftDirectory\" value=\""+ Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\.minecraft\" />");
             sb.AppendLine("    <add key=\"downloadAddress\" value=\"https://github.com/elliotnash/fabricMods/archive/master.zip\" />");
             sb.AppendLine("    <add key=\"defaultAddress\" value=\"https://github.com/elliotnash/fabricMods/archive/master.zip\" />");
             sb.AppendLine("  </appSettings>");
@@ -134,8 +110,9 @@ namespace eLOITsModSync
             string loc = Assembly.GetEntryAssembly().Location;
             System.IO.File.WriteAllText(String.Concat(loc, ".config"), sb.ToString());
 
-            System.Diagnostics.Process.Start(Application.ResourceAssembly.Location);
-            Application.Current.Shutdown();
+            minecraftDirectory = (Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\.minecraft");
+            downloadAddress = "https://github.com/elliotnash/fabricMods/archive/master.zip";
+            defaultAddress = "https://github.com/elliotnash/fabricMods/archive/master.zip";
 
         }
 
@@ -169,16 +146,15 @@ namespace eLOITsModSync
 
         private void changeAddress_Click(object sender, RoutedEventArgs e)
         {
-            inputDialog inputDialog = new inputDialog("Please enter a link to a direct download of a .zip file containing only folder with a minecraft directory. all files inside that folder will be copied to inside the .minecraft folder", downloadAddressString);
+            inputDialog inputDialog = new inputDialog("Please enter a link to a direct download of a .zip file containing only folder with a minecraft directory. all files inside that folder will be copied to inside the .minecraft folder", downloadAddress);
             if (inputDialog.ShowDialog() == true)
-                downloadAddressString = inputDialog.Answer;
-                storeValue("downloadAddress",downloadAddressString);
+                downloadAddress = inputDialog.Answer;
+                storeValue("downloadAddress",downloadAddress);
         }
 
         private void resetAddress_Click(object sender, RoutedEventArgs e)
         {
-            downloadAddressString = getValue("defaultAddress");
-            storeValue("downloadAddress", downloadAddressString);
+            storeValue("downloadAddress", downloadAddress);
             
         }
     }
