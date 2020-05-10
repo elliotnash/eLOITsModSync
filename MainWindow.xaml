@@ -38,6 +38,6 @@
         </Rectangle>
         <Button x:Name="installMods" Content="Install mods" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Margin="0,0,0,50"/>
         <Button x:Name="changeAddress" Content="Change download address" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Click="changeAddress_Click"/>
-        <Button x:Name="resetAddress" Content="Reset download address" HorizontalAlignment="Center" Margin="0,50,0,0" Grid.Row="1" VerticalAlignment="Center"/>
+        <Button x:Name="resetAddress" Content="Reset download address" HorizontalAlignment="Center" Margin="0,50,0,0" Grid.Row="1" VerticalAlignment="Center" Click="resetAddress_Click"/>
     </Grid>
 </Window>

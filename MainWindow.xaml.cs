@@ -19,7 +19,7 @@ using System.Threading;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using System.CodeDom;
 using Microsoft.VisualBasic;
-
+using System.Reflection;
 
 namespace eLOITsModSync
 {
@@ -36,6 +36,18 @@ namespace eLOITsModSync
         {
             InitializeComponent();
 
+            //Checks if config file exists. If it doesn't creates a config with default settings
+            if (!File.Exists(System.AppDomain.CurrentDomain.FriendlyName + ".Config"))
+            {
+                Debug.WriteLine(System.AppDomain.CurrentDomain.FriendlyName + ".Config");
+                Debug.WriteLine("config missing");
+                resetConfig();
+            }
+            else
+            {
+                Debug.WriteLine("config exists");
+                
+            }
 
 
             //Gets the default minecraft directory if first run, else gets the value from config.
@@ -101,6 +113,32 @@ namespace eLOITsModSync
                 MessageBox.Show(string.Format("{0} Directory does not exist!", folderPath));
             }
         }
+        //Method that makes new config
+        private void resetConfig()
+        {
+            System.Text.StringBuilder sb = new StringBuilder();
+            sb.AppendLine("<?xml version=\"1.0\" encoding=\"utf - 8\" ?>");
+            sb.AppendLine("<configuration>");
+            sb.AppendLine("    <startup>");
+            sb.AppendLine("        <supportedRuntime version=\"v4.0\" sku=\".NETFramework, Version = v4.7.2\" />");
+            sb.AppendLine("    </startup>");
+            sb.AppendLine("  <appSettings>");
+            sb.AppendLine("    <add key=\"firstRun\" value=\"true\"/>");
+            sb.AppendLine("    <add key=\"minecraftDirectory\" value=\" % APPDATA %\.minecraft\" />");
+            sb.AppendLine("    <add key=\"downloadAddress\" value=\"https://github.com/elliotnash/fabricMods/archive/master.zip\" />");
+            sb.AppendLine("    <add key=\"defaultAddress\" value=\"https://github.com/elliotnash/fabricMods/archive/master.zip\" />");
+            sb.AppendLine("  </appSettings>");
+            sb.AppendLine("</configuration>");
+
+
+            string loc = Assembly.GetEntryAssembly().Location;
+            System.IO.File.WriteAllText(String.Concat(loc, ".config"), sb.ToString());
+
+            System.Diagnostics.Process.Start(Application.ResourceAssembly.Location);
+            Application.Current.Shutdown();
+
+        }
+
 
         private void changeDirectory_Click(object sender, RoutedEventArgs e)
         {
@@ -134,7 +172,14 @@ namespace eLOITsModSync
             inputDialog inputDialog = new inputDialog("Please enter a link to a direct download of a .zip file containing only folder with a minecraft directory. all files inside that folder will be copied to inside the .minecraft folder", downloadAddressString);
             if (inputDialog.ShowDialog() == true)
                 downloadAddressString = inputDialog.Answer;
+                storeValue("downloadAddress",downloadAddressString);
+        }
 
+        private void resetAddress_Click(object sender, RoutedEventArgs e)
+        {
+            downloadAddressString = getValue("defaultAddress");
+            storeValue("downloadAddress", downloadAddressString);
+            
         }
     }
 }
