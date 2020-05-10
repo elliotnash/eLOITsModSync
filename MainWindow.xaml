@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:eLOITsModSync"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="eLOIT's Mod Syncer" Height="450" Width="800"
+        MinHeight="400" MinWidth="650">
     <Grid VerticalAlignment="Stretch">
         <Grid.RowDefinitions>
             <RowDefinition/>
@@ -16,8 +17,9 @@
         </Grid.ColumnDefinitions>
         <TextBox x:Name="currentDirectoryTextField" HorizontalAlignment="Center" Text="TextBox" TextWrapping="Wrap" VerticalAlignment="Center" Background="#FFEDEDED" IsReadOnly="True"/>
         <Label x:Name="appName" Content="eLOIT's Mod Syncer" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="24" FontFamily="Arial Narrow" Panel.ZIndex="1"/>
-        <Button x:Name="changeDirectory" Content="Change Minecraft directory" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,50,0,0"/>
+        <Button x:Name="changeDirectory" Content="Change Minecraft directory" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,50,0,0" Click="changeDirectory_Click"/>
         <TextBlock x:Name="currentDirectoryLabel" HorizontalAlignment="Center" Text="Current Minecraft directory:" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,0,50"/>
+        <Button x:Name="resetDirectory" Content="Reset Minecraft directory" HorizontalAlignment="Center" Margin="0,100,0,0" VerticalAlignment="Center" Click="resetDirectory_Click"/>
         <Rectangle x:Name="headerGradient" HorizontalAlignment="Stretch" Height="35" VerticalAlignment="Top">
             <Rectangle.Fill>
                 <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
@@ -35,7 +37,7 @@
             </Rectangle.Fill>
         </Rectangle>
         <Button x:Name="installMods" Content="Install mods" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Margin="0,0,0,50"/>
-        <Button x:Name="changeAddress" Content="Change download address" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center"/>
+        <Button x:Name="changeAddress" Content="Change download address" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Click="changeAddress_Click"/>
         <Button x:Name="resetAddress" Content="Reset download address" HorizontalAlignment="Center" Margin="0,50,0,0" Grid.Row="1" VerticalAlignment="Center"/>
     </Grid>
 </Window>
