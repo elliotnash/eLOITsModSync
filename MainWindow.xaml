@@ -1,0 +1,41 @@
+﻿<Window x:Class="eLOITsModSync.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:eLOITsModSync"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800">
+    <Grid VerticalAlignment="Stretch">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <TextBox x:Name="currentDirectoryTextField" HorizontalAlignment="Center" Text="TextBox" TextWrapping="Wrap" VerticalAlignment="Center" Background="#FFEDEDED" IsReadOnly="True"/>
+        <Label x:Name="appName" Content="eLOIT's Mod Syncer" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="24" FontFamily="Arial Narrow" Panel.ZIndex="1"/>
+        <Button x:Name="changeDirectory" Content="Change Minecraft directory" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,50,0,0"/>
+        <TextBlock x:Name="currentDirectoryLabel" HorizontalAlignment="Center" Text="Current Minecraft directory:" TextWrapping="Wrap" VerticalAlignment="Center" Margin="0,0,0,50"/>
+        <Rectangle x:Name="headerGradient" HorizontalAlignment="Stretch" Height="35" VerticalAlignment="Top">
+            <Rectangle.Fill>
+                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                    <LinearGradientBrush.RelativeTransform>
+                        <TransformGroup>
+                            <ScaleTransform CenterY="0.5" CenterX="0.5"/>
+                            <SkewTransform CenterY="0.5" CenterX="0.5"/>
+                            <RotateTransform Angle="-90" CenterY="0.5" CenterX="0.5"/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </LinearGradientBrush.RelativeTransform>
+                    <GradientStop Color="#FFB900FF" Offset="0"/>
+                    <GradientStop Color="#FF00FFF9" Offset="1"/>
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+        <Button x:Name="installMods" Content="Install mods" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Margin="0,0,0,50"/>
+        <Button x:Name="changeAddress" Content="Change download address" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center"/>
+        <Button x:Name="resetAddress" Content="Reset download address" HorizontalAlignment="Center" Margin="0,50,0,0" Grid.Row="1" VerticalAlignment="Center"/>
+    </Grid>
+</Window>
