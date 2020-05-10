@@ -20,6 +20,9 @@ using Microsoft.WindowsAPICodePack.Dialogs;
 using System.CodeDom;
 using Microsoft.VisualBasic;
 using System.Reflection;
+using System.Net;
+using System.ComponentModel;
+using System.IO.Compression;
 
 namespace eLOITsModSync
 {
@@ -32,6 +35,7 @@ namespace eLOITsModSync
         public static String minecraftDirectory;
         public static String downloadAddress;
         public static String defaultAddress;
+        public static String workingDirectory;
 
         public MainWindow()
         {
@@ -41,7 +45,9 @@ namespace eLOITsModSync
             minecraftDirectory = getValue("minecraftDirectory");
             downloadAddress = getValue("downloadAddress");
             defaultAddress = getValue("defaultAddress");
-            
+            workingDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
+
             //Don't pull values from config once running, only save them
             //Sets current dirctory text block to current minecraft directory
             currentDirectoryTextField.Text = minecraftDirectory;
@@ -134,7 +140,7 @@ namespace eLOITsModSync
 
         private void resetDirectory_Click(object sender, RoutedEventArgs e)
         {
-            MessageBoxResult messageBoxResult = System.Windows.MessageBox.Show("Are you sure you would like to reset the minecraft directory to %AppData%\\.minecraft?", "Reset Minecraft Directory", System.Windows.MessageBoxButton.YesNo);
+            MessageBoxResult messageBoxResult = MessageBox.Show("Are you sure you would like to reset the minecraft directory to %AppData%\\.minecraft?", "Reset Minecraft Directory", System.Windows.MessageBoxButton.YesNo);
             if (messageBoxResult == MessageBoxResult.Yes)
             {
                 minecraftDirectory = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\.minecraft";
@@ -154,8 +160,40 @@ namespace eLOITsModSync
 
         private void resetAddress_Click(object sender, RoutedEventArgs e)
         {
-            storeValue("downloadAddress", downloadAddress);
-            
+            MessageBoxResult messageBoxResult = MessageBox.Show("Are you sure you would like to reset the download address to https://github.com/elliotnash/fabricMods/archive/master.zip", "Reset download address", System.Windows.MessageBoxButton.YesNo);
+            if (messageBoxResult == MessageBoxResult.Yes)
+            {
+                downloadAddress = defaultAddress;
+                storeValue("downloadAddress", downloadAddress);
+            }
+        }
+
+        //runs when install mods clicked
+        private WebClient webClient = null;
+        private void installMods_Click(object sender, RoutedEventArgs e)
+        {
+            //if file is downloading already, clicking again will do nothing. make sure to set webClient back to
+            //null once done so that button will work later.
+            if (webClient != null)
+                return;
+
+            webClient = new WebClient();
+            webClient.DownloadFileCompleted += new AsyncCompletedEventHandler(Completed);
+            webClient.DownloadFileAsync(new Uri(downloadAddress), workingDirectory+"tempDownload.zip");
+        }
+
+        private async void Completed(object sender, AsyncCompletedEventArgs e)
+        {
+            void unZip()
+            {
+                ZipFile.ExtractToDirectory(workingDirectory + "tempDownload.zip", workingDirectory + "tempFolder");
+            }
+
+
+            var task = new Task(() => unZip());
+            task.Start();
+            await task;
+            Debug.WriteLine("Done unzipping");
         }
     }
 }
