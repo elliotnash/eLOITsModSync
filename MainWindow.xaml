@@ -39,5 +39,6 @@
         <Button x:Name="installMods" Content="Install mods" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Margin="0,0,0,50" Click="installMods_Click"/>
         <Button x:Name="changeAddress" Content="Change download address" HorizontalAlignment="Center" Grid.Row="1" VerticalAlignment="Center" Click="changeAddress_Click"/>
         <Button x:Name="resetAddress" Content="Reset download address" HorizontalAlignment="Center" Margin="0,50,0,0" Grid.Row="1" VerticalAlignment="Center" Click="resetAddress_Click"/>
+        <CheckBox x:Name="optifineBox" Content="Install Optifine (disable and install mods again if game crashes)" HorizontalAlignment="Center" Margin="0,0,0,100" Grid.Row="1" VerticalAlignment="Center" Click="optifineBox_Clicked"/>
     </Grid>
 </Window>

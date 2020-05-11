@@ -37,6 +37,8 @@ namespace eLOITsModSync
         public static String downloadAddress;
         public static String defaultAddress;
         public static String workingDirectory;
+        public static bool useOptifine;
+        
 
         public MainWindow()
         {
@@ -47,6 +49,15 @@ namespace eLOITsModSync
             downloadAddress = getValue("downloadAddress");
             defaultAddress = getValue("defaultAddress");
             workingDirectory = AppDomain.CurrentDomain.BaseDirectory;
+
+            //initalizes optifine checkbox.
+            if (getValue("useOptifine") == "true")
+            {
+                optifineBox.IsChecked = true;
+            } else
+            {
+                optifineBox.IsChecked = false;
+            }
 
 
             //Don't pull values from config once running, only save them
@@ -110,6 +121,7 @@ namespace eLOITsModSync
             sb.AppendLine("    <add key=\"minecraftDirectory\" value=\""+ Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\.minecraft\" />");
             sb.AppendLine("    <add key=\"downloadAddress\" value=\"https://github.com/elliotnash/fabricMods/archive/master.zip\" />");
             sb.AppendLine("    <add key=\"defaultAddress\" value=\"https://github.com/elliotnash/fabricMods/archive/master.zip\" />");
+            sb.AppendLine("    <add key=\"useOptifine\" value=\"false\" />");
             sb.AppendLine("  </appSettings>");
             sb.AppendLine("</configuration>");
 
@@ -173,6 +185,7 @@ namespace eLOITsModSync
         private WebClient webClient = null;
         private void installMods_Click(object sender, RoutedEventArgs e)
         {
+            useOptifine = optifineBox.IsChecked == true;
             //if file is downloading already, clicking again will do nothing. make sure to set webClient back to
             //null once done so that button will work later.
             try
@@ -200,12 +213,33 @@ namespace eLOITsModSync
                     //checks if tempFolder exists and deletes it to update with zip
                     if (Directory.Exists(workingDirectory + "tempFolder"))
                     {
-                        Directory.Delete(workingDirectory + "tempFolder", true);
+                        DeleteDirectory(workingDirectory + "tempFolder");
                     }
                     ZipFile.ExtractToDirectory(workingDirectory + "tempDownload.zip", workingDirectory + "tempFolder");
                     string[] subdirectoryEntries = Directory.GetDirectories(workingDirectory + "tempFolder");
                     String subFolder = subdirectoryEntries[0];
                     Debug.WriteLine(subFolder);
+
+                    /*
+                    checks if it should use optifine and if so merges optifine contents with mod folder. if not deletes optifine folder
+                    firsts checks to see if there even is an optifine folder
+                    lotsa try catches here lol
+                    */
+                    if (Directory.Exists(subFolder + @"\optifine") && Directory.Exists(subFolder + @"\mods"))
+                    {
+                        Debug.WriteLine("Optifine folder exists");
+
+                        //runs if useOptifine checked
+                        if(useOptifine)
+                        {
+                            Microsoft.VisualBasic.FileIO.FileSystem.MoveDirectory(subFolder+@"\optifine", subFolder+@"\mods", true /* Overwrite */);
+                        } else
+                        {
+                            DeleteDirectory(subFolder + @"\optifine");
+                        }
+
+                    }
+
 
                     //checks if mamiyaotaru folder exists and if so moves it to temp and then back after the deletion operation
                     bool mamiyaotaru = Directory.Exists(minecraftDirectory + @"\mods\mamiyaotaru");
@@ -217,11 +251,11 @@ namespace eLOITsModSync
                     //deletes cachedimages and mods folder
                     if (Directory.Exists(minecraftDirectory + @"\mods"))
                     {
-                        Directory.Delete(minecraftDirectory + @"\mods");
+                        DeleteDirectory(minecraftDirectory + @"\mods");
                     }
                     if (Directory.Exists(minecraftDirectory + @"\cachedImages"))
                     {
-                        Directory.Delete(minecraftDirectory + @"\cachedImages");
+                        DeleteDirectory(minecraftDirectory + @"\cachedImages");
                     }
 
                     //copies new mods and chached images folder
@@ -234,7 +268,7 @@ namespace eLOITsModSync
                     }
 
                     //Deletes temp folder and zip.
-                    Directory.Delete(workingDirectory + "tempFolder");
+                    DeleteDirectory(workingDirectory + "tempFolder");
                     File.Delete(workingDirectory + "tempDownload.zip");
 
                 }catch (Exception ee)
@@ -252,7 +286,37 @@ namespace eLOITsModSync
             installMods.IsEnabled = true;
             webClient = null;
         }
+        public static void DeleteDirectory(string target_dir)
+        {
+            string[] files = Directory.GetFiles(target_dir);
+            string[] dirs = Directory.GetDirectories(target_dir);
+
+            foreach (string file in files)
+            {
+                File.SetAttributes(file, FileAttributes.Normal);
+                File.Delete(file);
+            }
+
+            foreach (string dir in dirs)
+            {
+                DeleteDirectory(dir);
+            }
+
+            Directory.Delete(target_dir, false);
+        }
+
+        private void optifineBox_Clicked(object sender, RoutedEventArgs e)
+        {
+            if (optifineBox.IsChecked == true)
+            {
+                storeValue("useOptifine", "true");
+            } else
+            {
+                storeValue("useOptifine", "false");
+            }
+        }
     }
+
 }
 
 
