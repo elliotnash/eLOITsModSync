@@ -315,6 +315,22 @@ namespace eLOITsModSync
                 storeValue("useOptifine", "false");
             }
         }
+
+        private void Window_Closing(object sender, CancelEventArgs e)
+        {
+            if (webClient != null)
+            {
+                MessageBoxResult messageBox = MessageBox.Show("Installation in progress, please click cancle to not fuck stuff up. if you really need to close click ok, but don't say I didn't warn you...", "Really close?", MessageBoxButton.OKCancel);
+                if (messageBox == MessageBoxResult.OK)
+                {
+                    e.Cancel = false;
+                }
+                else
+                    e.Cancel = true;
+            }
+            else
+                e.Cancel = false;
+        }
     }
 
 }
