@@ -194,37 +194,53 @@ namespace eLOITsModSync
         {
             void unZip()
             {
-                //checks if tempFolder exists and deletes it to update with zip
-                if (Directory.Exists(workingDirectory + "tempFolder"))
+                try
                 {
-                    Directory.Delete(workingDirectory + "tempFolder", true);
-                }
-                ZipFile.ExtractToDirectory(workingDirectory + "tempDownload.zip", workingDirectory + "tempFolder");
-                string[] subdirectoryEntries = Directory.GetDirectories(workingDirectory + "tempFolder");
-                String subFolder = subdirectoryEntries[0];
-                Debug.WriteLine(subFolder);
 
-                //checks if mamiyaotaru folder exists and if so moves it to temp and then back after the deletion operation
-                bool mamiyaotaru = Directory.Exists(minecraftDirectory + @"\mods\mamiyaotaru");
-                if (mamiyaotaru)
-                {
-                    Directory.Move(minecraftDirectory + @"\mods\mamiyaotaru", minecraftDirectory+@"\mamiyaotaru");
-                }
-                //deletes cachedimages and mods folder
-                if (Directory.Exists(minecraftDirectory + @"\mods"))
-                {
-                    Directory.Delete(minecraftDirectory + @"\mods");
-                }
-                if (Directory.Exists(minecraftDirectory + @"\cachedImages"))
-                {
-                    Directory.Delete(minecraftDirectory + @"\cachedImages");
-                }
+                    //checks if tempFolder exists and deletes it to update with zip
+                    if (Directory.Exists(workingDirectory + "tempFolder"))
+                    {
+                        Directory.Delete(workingDirectory + "tempFolder", true);
+                    }
+                    ZipFile.ExtractToDirectory(workingDirectory + "tempDownload.zip", workingDirectory + "tempFolder");
+                    string[] subdirectoryEntries = Directory.GetDirectories(workingDirectory + "tempFolder");
+                    String subFolder = subdirectoryEntries[0];
+                    Debug.WriteLine(subFolder);
 
-                //copies new mods and chached images folder
-                Microsoft.VisualBasic.FileIO.FileSystem.MoveDirectory(subFolder, minecraftDirectory, true /* Overwrite */);
+                    //checks if mamiyaotaru folder exists and if so moves it to temp and then back after the deletion operation
+                    bool mamiyaotaru = Directory.Exists(minecraftDirectory + @"\mods\mamiyaotaru");
+                    if (mamiyaotaru)
+                    {
 
-                //copies mamiyaotaru folder back
-                Directory.Move(minecraftDirectory + @"\mamiyaotaru", minecraftDirectory + @"\mods\mamiyaotaru");
+                        Directory.Move(minecraftDirectory + @"\mods\mamiyaotaru", minecraftDirectory + @"\mamiyaotaru");
+                    }
+                    //deletes cachedimages and mods folder
+                    if (Directory.Exists(minecraftDirectory + @"\mods"))
+                    {
+                        Directory.Delete(minecraftDirectory + @"\mods");
+                    }
+                    if (Directory.Exists(minecraftDirectory + @"\cachedImages"))
+                    {
+                        Directory.Delete(minecraftDirectory + @"\cachedImages");
+                    }
+
+                    //copies new mods and chached images folder
+                    Microsoft.VisualBasic.FileIO.FileSystem.MoveDirectory(subFolder, minecraftDirectory, true /* Overwrite */);
+
+                    //copies mamiyaotaru folder back
+                    if (mamiyaotaru)
+                    {
+                        Directory.Move(minecraftDirectory + @"\mamiyaotaru", minecraftDirectory + @"\mods\mamiyaotaru");
+                    }
+
+                    //Deletes temp folder and zip.
+                    Directory.Delete(workingDirectory + "tempFolder");
+                    File.Delete(workingDirectory + "tempDownload.zip");
+
+                }catch (Exception ee)
+                {
+                    MessageBoxResult messageBox = MessageBox.Show("Mod installation failed, error:" + ee, "Installation fail", MessageBoxButton.OK);
+                }
 
             }
 
@@ -234,6 +250,7 @@ namespace eLOITsModSync
             await task;
             Debug.WriteLine("Done unzipping");
             installMods.IsEnabled = true;
+            webClient = null;
         }
     }
 }
